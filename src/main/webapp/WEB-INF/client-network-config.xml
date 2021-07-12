@@ -1,0 +1,9 @@
+<hazelcast-client>
+    <network>
+        <cluster-members>
+            <address>127.0.0.1:5701</address>
+            <address>127.0.0.1:5702</address>
+            <address>127.0.0.1:5703</address>
+        </cluster-members>
+    </network>
+</hazelcast-client>

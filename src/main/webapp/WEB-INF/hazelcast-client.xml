@@ -1,0 +1,21 @@
+<hazelcast-client xmlns="http://www.hazelcast.com/schema/client-config"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.hazelcast.com/schema/client-config
+                  http://www.hazelcast.com/schema/client-config/hazelcast-client-config-5.0.xsd">
+
+   <!-- <import resource="client-network-config.xml"/>
+    <import resource="client-cluster-config.xml"/>-->
+
+    <network>
+        <cluster-members>
+            <address>127.0.0.1:5701</address>
+            <address>127.0.0.1:5702</address>
+            <address>127.0.0.1:5703</address>
+        </cluster-members>
+
+    </network>
+
+    <cluster-name>dev</cluster-name>
+    <instance-name>wc-client</instance-name>
+
+</hazelcast-client>
