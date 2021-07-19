@@ -31,7 +31,7 @@ public class HazelcastSessionReplication extends HttpServlet {
         } else {
             request.setAttribute("isNewTest", "Session already created");
             System.out.println("Session exists = " + session.getId() + "original Session" + ((HazelcastHttpSession)session).getOriginalSessionId());
-            session.setMaxInactiveInterval(10);
+            session.setMaxInactiveInterval(660);
         }
 
         if (request.getParameter("action") != null) {
