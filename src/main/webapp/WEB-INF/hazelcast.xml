@@ -1,0 +1,56 @@
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.hazelcast.com/schema/config
+        http://www.hazelcast.com/schema/config/hazelcast-config-4.2.xsd">
+    <cluster-name>${cluster.name}</cluster-name>
+    <instance-name>wc-instance</instance-name>
+   <!-- <config-replacers>
+        <replacer class-name="com.myorg.hzsession.HazelPropertyReplacer"></replacer>
+    </config-replacers>-->
+    <map name="wc-sessions">
+        <backup-count>1</backup-count>
+        <max-idle-seconds>900</max-idle-seconds>
+        <time-to-live-seconds>900</time-to-live-seconds>
+    </map>
+
+  <network>
+    <port auto-increment="true" port-count="100">5701</port>
+    <outbound-ports>
+        <!--
+        Allowed port range when connecting to other nodes.
+        0 or * means use system provided port.
+        -->
+        <ports>0</ports>
+    </outbound-ports>
+
+    <join>
+        <auto-detection enabled="false"/>
+        <multicast enabled="true">
+            <multicast-group>${multicast.group}</multicast-group>
+            <multicast-port>54327</multicast-port>
+        </multicast>
+    </join>
+      <socket-interceptor enabled="true">
+          <class-name>com.myorg.hzsession.HazelSocketInterceptor</class-name>
+          <properties>
+              <property name="member-id">${member.id}</property>
+          </properties>
+      </socket-interceptor>
+
+  </network>
+    <!--<security enabled="true">
+        <member-authentication realm="wcmember"/>
+        <realms>
+            <realm name="wcmember">
+                <authentication>
+                    <ldap>
+                        <url>ldap://localhost:8389/</url>
+                        <system-user-dn>uid=bob,ou=people,dc=springframework,dc=org</system-user-dn>
+                        <system-user-password>bobspassword</system-user-password>
+                    </ldap>
+                </authentication>
+            </realm>
+        </realms>
+    </security>-->
+
+</hazelcast>

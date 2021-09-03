@@ -1,9 +1,9 @@
-<!DOCTYPE web-app PUBLIC
-        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+                        http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
 
-<web-app>
-    <display-name>Archetype Created Web Application</display-name>
+    <display-name>Legacy Web Application</display-name>
     <servlet>
         <servlet-name>sessionReplication</servlet-name>
         <servlet-class>com.myorg.hzsession.HazelcastSessionReplication</servlet-class>
@@ -64,11 +64,11 @@
             <param-name>cookie-max-age</param-name>
             <param-value>660</param-value>
         </init-param>
-        <!-- this cannot be set as we are using client mode
+        <!-- this cannot be set if we are using client mode -->
         <init-param>
             <param-name>session-ttl-seconds</param-name>
-            <param-value>660</param-value>
-        </init-param> -->
+            <param-value>${max-idle-seconds}</param-value>
+        </init-param>
         <!--
             Should cookie only be sent using a secure protocol? Default is false.
         -->
@@ -97,7 +97,7 @@
         -->
         <init-param>
             <param-name>use-client</param-name>
-            <param-value>true</param-value>
+            <param-value>false</param-value>
         </init-param>
         <!--
             Client configuration location;
@@ -108,8 +108,8 @@
         -->
 
         <init-param>
-            <param-name>client-config-location</param-name>
-            <param-value>/WEB-INF/hazelcast-client.xml</param-value>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/hazelcast.xml</param-value>
         </init-param>
 
         <!--
@@ -122,15 +122,26 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
-    <filter-mapping>
+
+     <filter-mapping>
         <filter-name>hazelcast-filter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>${HAZEL_MAPPING}</url-pattern>
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 
-    <!--<listener>
-        <listener-class>com.hazelcast.web.SessionListener</listener-class>
-    </listener>-->
+    <listener>
+        <listener-class>com.myorg.hzsession.BeforeListener</listener-class>
+    </listener>
+
+   <listener>
+        <listener-class>com.myorg.hzsession.HazelSessionListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>StartupServlet</servlet-name>
+        <servlet-class>com.myorg.hzsession.StartupServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 </web-app>

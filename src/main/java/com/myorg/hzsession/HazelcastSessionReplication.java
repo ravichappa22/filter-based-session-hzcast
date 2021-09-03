@@ -1,5 +1,6 @@
 package com.myorg.hzsession;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.web.HazelcastHttpSession;
 
 import javax.servlet.ServletException;
@@ -22,16 +23,21 @@ public class HazelcastSessionReplication extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Boolean display = true;
-        HttpSession session = request.getSession(false);
-
+        HttpSession session = request.getSession();
         if (session == null) {
-            session = request.getSession();
+            session = request.getSession(true);
             request.setAttribute("isNewTest", "Session is created first time.");
             System.out.println("New Session = " + session.getId());
         } else {
             request.setAttribute("isNewTest", "Session already created");
-            System.out.println("Session exists = " + session.getId() + "original Session" + ((HazelcastHttpSession)session).getOriginalSessionId());
-            session.setMaxInactiveInterval(660);
+            if(System.getProperty("ENABLE_HAZELCAST_HA").equalsIgnoreCase("true")){
+                System.out.println("Session exists = " + session.getId() + " original Session" + ((HazelcastHttpSession)session).getOriginalSessionId());
+                System.out.println("session type = " + (session instanceof HazelcastHttpSession));
+            } else {
+                System.out.println("not hazelcast");
+                System.out.println("session type = " + (session instanceof HazelcastHttpSession));
+            }
+             session.setMaxInactiveInterval(660);
         }
 
         if (request.getParameter("action") != null) {
@@ -51,8 +57,12 @@ public class HazelcastSessionReplication extends HttpServlet {
             }
 
             if (request.getParameter("action").equals("complete")) {
-                System.out.println("complete action");
-                session.invalidate();
+                System.out.println("complete action " + session.getId());
+
+                //this has to delete only session data, but not session key
+                HazelcastInstance instance = HazelClientIntfImpl.getInstance();
+                instance.getMap("wc-sessions").delete(session.getId());
+
             }
 
             if (request.getParameter("action").equals("logout")) {
